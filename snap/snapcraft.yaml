@@ -11,6 +11,11 @@ description: |-
 
 confinement: strict
 
+package-repositories:
+  - type: apt
+    ppa: dhanyapillai/doca-all-dpu-3.3.0
+    priority: always
+
 slots:
   ovn-certificates:
     interface: content
