@@ -13,8 +13,9 @@ confinement: strict
 
 package-repositories:
   - type: apt
-    ppa: dhanyapillai/doca-all-dpu-3.3.0
+    url: https://linux.mellanox.com/public/repo/doca/3.2.1/ubuntu24.04/x86_64/
     priority: always
+    key-id: CAE649B3B3929F8470D4D33BA024F6F0E6D6A281
 
 slots:
   ovn-certificates:
@@ -205,6 +206,14 @@ parts:
     organize:
       usr/bin/: bin/
       usr/share/: share/
+    stage:
+     - -bin/ovs-appctl
+     - -bin/ovs-dpctl
+     - -bin/ovs-ofctl
+     - -bin/ovs-vsctl
+     - -bin/ovsdb-client
+     - -bin/ovsdb-server
+     - -bin/ovsdb-tool
     prime:
      - bin/ovn-appctl
      - bin/ovn-controller
@@ -222,7 +231,7 @@ parts:
   ovs:
     plugin: nil
     stage-packages:
-      - openvswitch-switch
+      - doca-openvswitch-switch
     organize:
       usr/bin/: bin/
       usr/sbin/: bin/
@@ -246,6 +255,12 @@ parts:
      - lib/*/libbpf.so.*
      - lib/*/libxdp.so.*
      - lib/*/libunbound.so*
+     - lib/*/libibverbs*
+     - lib/*/libjansson.so*
+     - lib/*/libunwind.so*
+     - lib/*/libmlx5.so*
+     - lib/*/libpcap.so*
+     - lib/*/libnvhws.so*
      - share/openvswitch
     override-build: |
         craftctl default
@@ -277,10 +292,10 @@ parts:
       go get -d -v ./...
     override-build: |
       set -ex
-      
+
       # Load dynamic configuration options for MicroOVN snap build
       source ./build-aux/environment
-      
+
       # Conditionally build MicroOVN with coverage instrumentation
       EXTRA_BUILD_ARGS=""
       echo "" > $CRAFT_STAGE/coverage.env
@@ -314,20 +329,20 @@ parts:
           $CRAFT_PART_SRC/../../ovn/stage_packages/ovn-host*.deb Version)
       ovs_pkg_version=$(
           dpkg-deb -f \
-          $CRAFT_PART_SRC/../../ovs/stage_packages/openvswitch-switch*.deb Version)
+          $CRAFT_PART_SRC/../../ovs/stage_packages/doca-openvswitch-switch*.deb Version)
       git_version=$(
           git -C $CRAFT_PROJECT_DIR describe \
               --always \
               --dirty \
               --abbrev=10)
-      
+
       # Set Snap's version string
       # Note (mkalcok): Short version string does not include potential package snapshot hash.
       #                 This is required because Snap's version string is limited to 32 chars
       #                 and inclusion of snapshot hash violates this boundary.
       ovn_pkg_short_version=$(echo $ovn_pkg_version | sed -rne 's/([0-9.]+)[-+~].*$$/\1/p')
       craftctl set version=${ovn_pkg_short_version}+snap${git_version}
-      
+
       version_package=github.com/canonical/microovn/microovn/version
       go_ldflags="-X '${version_package}.MicroOvnVersion=${git_version}${EXTRA_BUILD_ARGS}' \
                   -X '${version_package}.OvnVersion=${ovn_pkg_version}' \
