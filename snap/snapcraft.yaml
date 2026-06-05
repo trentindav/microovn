@@ -13,7 +13,7 @@ confinement: strict
 
 package-repositories:
   - type: apt
-    url: https://linux.mellanox.com/public/repo/doca/3.2.1/ubuntu24.04/x86_64/
+    url: https://linux.mellanox.com/public/repo/doca/3.2.2/ubuntu24.04/x86_64/
     priority: always
     key-id: CAE649B3B3929F8470D4D33BA024F6F0E6D6A281
 
@@ -34,6 +34,8 @@ slots:
       write:
         - "$SNAP_COMMON/run/switch"
         - "$SNAP_COMMON/run/ovn"
+        - "$SNAP_COMMON/run/dpdk"
+        - "$SNAP_COMMON/run/tmp"
   ovn-central-data:
     interface: content
     source:
@@ -112,6 +114,32 @@ apps:
       - openvswitch-support
       - process-control
       - system-trace
+    # environment:
+    #   RUNTIME_DIRECTORY: /var/snap/microovn/common/run
+  
+  # The following apparmor rules must be added to a new interface
+  # The snap has been tested applying these rules manually
+  # vim /var/lib/snapd/apparmor/profiles/snap.microovn.switch
+  # # Required
+  # /var/run/** rw,
+  # /var/tmp/** rw,
+  # /dev/cpu/*/msr rw,
+
+  # # From microstack
+  # @{PROC}/@{pids}/pagemap r,
+  # /sys/kernel/iommu_groups/{,**} r,
+  # /dev/vfio/vfio rw,
+  # # microstack also uses the following for DPDK 
+  # # but no error was observed removing them in microovn
+  # # further testing with traffic is necessary
+  # # capability ipc_lock,
+  # # owner / rw,
+
+  # # The following are triggering Denial errors also with the official microovn
+  # # Probably not allowed to avoid opening up powerful permissions
+  # capability perfmon,
+  # /usr/bin/systemctl Ux,
+  # /usr/bin/plymouth Ux,
 
   # Commands
   microovn:
@@ -335,6 +363,9 @@ parts:
               --always \
               --dirty \
               --abbrev=10)
+      echo $ovs_pkg_version > $CRAFT_STAGE/ovs_version.txt
+      echo $ovn_pkg_version > $CRAFT_STAGE/ovn_version.txt
+      echo $git_version > $CRAFT_STAGE/git_version.txt
 
       # Set Snap's version string
       # Note (mkalcok): Short version string does not include potential package snapshot hash.
