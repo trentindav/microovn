@@ -114,8 +114,7 @@ apps:
       - openvswitch-support
       - process-control
       - system-trace
-    # environment:
-    #   RUNTIME_DIRECTORY: /var/snap/microovn/common/run
+      - physical-memory-observe
   
   # The following apparmor rules must be added to a new interface
   # The snap has been tested applying these rules manually
@@ -134,12 +133,6 @@ apps:
   # # further testing with traffic is necessary
   # # capability ipc_lock,
   # # owner / rw,
-
-  # # The following are triggering Denial errors also with the official microovn
-  # # Probably not allowed to avoid opening up powerful permissions
-  # capability perfmon,
-  # /usr/bin/systemctl Ux,
-  # /usr/bin/plymouth Ux,
 
   # Commands
   microovn:

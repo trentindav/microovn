@@ -10,6 +10,7 @@ export OVS_DBDIR="${SNAP_COMMON}/data/switch/db"
 export OVS_PKGDATADIR="${SNAP}/share/openvswitch"
 export OVS_BINDIR="${SNAP}/bin"
 export OVS_SBINDIR="${SNAP}/bin"
+export RUNTIME_DIRECTORY="${SNAP_COMMON}/run"
 
 mkdir -p ${OVS_RUNDIR} ${OVS_LOGDIR} ${OVS_DBDIR}
 
