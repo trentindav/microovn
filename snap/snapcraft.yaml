@@ -115,6 +115,7 @@ apps:
       - process-control
       - system-trace
       - physical-memory-observe
+      - infiniband
   
   # The following apparmor rules must be added to a new interface
   # The snap has been tested applying these rules manually
