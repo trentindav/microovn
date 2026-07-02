@@ -13,7 +13,7 @@ confinement: strict
 
 package-repositories:
   - type: apt
-    url: https://linux.mellanox.com/public/repo/doca/3.2.2/ubuntu24.04/x86_64/
+    url: https://linux.mellanox.com/public/repo/doca/3.2.1/ubuntu24.04/arm64/
     priority: always
     key-id: CAE649B3B3929F8470D4D33BA024F6F0E6D6A281
 
@@ -115,8 +115,8 @@ apps:
       - process-control
       - system-trace
       - physical-memory-observe
-      - custom-ib
-      # - infiniband
+        #- custom-ib
+      - infiniband
   
   # The following apparmor rules must be added to a new interface
   # The snap has been tested applying these rules manually
@@ -295,6 +295,51 @@ parts:
     plugin: nil
     stage-packages:
       - doca-openvswitch-switch
+      - libarchive13t64
+      - libjansson4
+      - srptools
+      - libgomp1
+      - linux-tools-common
+      - mft-mlx5
+      - strongswan-charon
+      - isert-modules
+      - libfdt1
+      - libmm-glib0
+      - mstflint
+      - pciutils
+      - linux-tools-bluefield
+      - libpcap0.8t64
+      - libldap2
+      - libibnetdisc5
+      - ibacm
+      - libgdbm-compat4t64
+      - libsensors-config
+      - acpid
+      - perl
+      - libzip4t64
+      - libunwind8
+      - ibverbs-utils
+      - ibverbs-providers
+      - mft
+      - libibmad5
+      - dpcp
+      - libpka1
+      - libpka1-engine
+      - librdmacm1
+      - libteec1
+      - libvma
+      - libvma-utils
+      - libyara10
+      - mlnx-dpdk
+      - mlnx-iproute2
+      - mlnx-tools
+      - mlx-openipmi
+      - rdma-core
+      - rdmacm-utils
+      - ucx
+      - libnvhws1
+      - libicu-dev
+      - libicu74
     organize:
       usr/bin/: bin/
       usr/sbin/: bin/
@@ -324,6 +369,10 @@ parts:
      - lib/*/libmlx5.so*
      - lib/*/libpcap.so*
      - lib/*/libnvhws.so*
+     - lib/*/libarchive.so*
+     - lib/*/libxml2.so*
+     - lib/*/libicuuc.so.*
+     - lib/*/libicudata.so.*
      - share/openvswitch
     override-build: |
         craftctl default
